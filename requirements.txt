@@ -1,0 +1,7 @@
+streamlit
+regex
+demoji
+plotly
+wordcloud
+# oauthlib
+# requests
