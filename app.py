@@ -144,7 +144,7 @@ estadistica_df = estadistica_df.set_index('Tipo')
 ###################################
 ###################################
 st.header('💡 Estadísticas generales')
-col1, col2 = st.columns([1, 2])
+col1, col2 = st.beta_columns([1, 2])
 
 with col1:
     st.write(estadistica_df)
@@ -284,7 +284,7 @@ st.subheader('Cómo se distribuyen nuestros mensajes 👀')
 st.write(miembro_stats_df)
 ###################################
 st.header('🤗 Emojis más usados con mi novia')
-col1, col2 = st.columns([1, 2])
+col1, col2 = st.beta_columns([1, 2])
 
 with col1:
     st.write(emoji_df)
