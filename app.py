@@ -1,13 +1,10 @@
 import pandas as pd
 import re
 import json
-
 import regex
 import demoji
-
 import numpy as np
 from collections import Counter
-
 import plotly.express as px
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -16,13 +13,11 @@ from wordcloud import WordCloud, STOPWORDS
 # Importacnion de streamlit
 import streamlit as st
 
-###################################
-###################################
+#################################################################
 # Título de la aplicación
 st.title('Análisis de nuestro chat WhatsApp ❤️')
-st.write('Creado por [Jhon Lima](https://github.com/jhonlima97)')
-###################################
-###################################
+st.write('Creado por [Jhonsito Lima](https://github.com/jhonlima97) para [Gabriela Santilán:](https://www.linkedin.com/in/marigabysc/)')
+##################################################################
 
 ##########################################
 # ### Paso 1: Definir funciones necesarias
@@ -104,7 +99,6 @@ end_date = '2024-02-01'
 
 df = df[(df['Fecha'] >= start_date) & (df['Fecha'] <= end_date)]
 
-
 ##################################################################
 # ### Paso 3: Estadísticas de mensajes, multimedia, emojis y links
 ##################################################################
@@ -179,62 +173,56 @@ emoji_df = emoji_df.rename(columns={'index': 'ID', 'Emoji': 'Emoji', 'Cantidad':
 emoji_df = emoji_df.head(10)
 #emoji_df = emoji_df.set_index('Emoji').head(10)
 
-
 # Plotear el pie de los emojis más usados
-fig = px.pie(emoji_df, values='Cantidad', names=emoji_df.index, hole=.3, template='plotly_dark', color_discrete_sequence=px.colors.qualitative.Pastel2)
+fig = px.pie(emoji_df, values='Cantidad', names=emoji_df.Emoji, hole=.3, template='plotly_dark', color_discrete_sequence=px.colors.qualitative.Pastel2)
 fig.update_traces(textposition='inside', textinfo='percent+label', textfont_size=20)
 
 # Ajustar el gráfico
-fig.update_layout(
-    # title={'text': 'Emojis más usados',
-    # #          'y':0.96,
-    # #          'x':0.5,
-    #          'xanchor': 'center'}, font=dict(size=17),
-    showlegend=False)
+fig.update_layout(showlegend=False)
 # fig.show()
 
-###################################
-# st.header('Emojis más usados')
-# col1, col2 = st.columns([1, 2])
+#### Paso 4: Estadísticas de los miembros del chat
+# Agregar una columna 'Links' al DataFrame original df
+df['Links'] = df['Mensaje'].apply(lambda x: len(re.findall(url_patron, x)))
 
-# with col1:
-#     st.write(emoji_df)
-
-# with col2:
-#     st.plotly_chart(fig)
-###################################
-
-# ### Paso 4: Estadísticas de los miembros del grupo
-
-# #### Miembros más activos
-
-# Determinar los miembros más activos del grupo
-df_mActivos = df.groupby('Miembro')['Mensaje'].count().sort_values(ascending=False).to_frame()
+# Calcular el número total de mensajes por miembro, incluyendo mensajes de texto, emojis, multimedia y enlaces
+df_mActivos = df.groupby('Miembro').agg({
+    'Mensaje': 'count', 
+    'Emojis': lambda x: sum(len(emojis) for emojis in x),
+    'Links': 'sum'  # Agregar la suma de enlaces por miembro
+})
 df_mActivos.reset_index(inplace=True)
-df_mActivos.index = np.arange(1, len(df_mActivos)+1)
-df_mActivos['% Mensaje'] = (df_mActivos['Mensaje'] / df_mActivos['Mensaje'].sum()) * 100
-# Renombrar las columnas
-df_mActivos = df_mActivos.rename(columns={'Miembro': 'Miembro', 'Mensaje': '# mensajes', '% Mensaje': '% Mensajes'})
-#df_mActivos
 
-###################################
-###################################
+# Sumar los diferentes tipos de mensajes para obtener el número total de mensajes por miembro
+df_mActivos['# mensajes'] = df_mActivos['Mensaje'] + df_mActivos['Emojis'] + df_mActivos['Links']
+
+# Calcular el porcentaje de mensajes para cada miembro
+df_mActivos['% Mensajes'] = (df_mActivos['# mensajes'] / df_mActivos['# mensajes'].sum()) * 100
+
+# Seleccionar solo las columnas necesarias
+df_mActivos = df_mActivos[['Miembro', '# mensajes', '% Mensajes']]
+
+# Renombrar las columnas
+df_mActivos = df_mActivos.rename(columns={'Miembro': 'Miembro', '# mensajes': '# Mensajes', '% Mensajes': '% Mensajes'})
+
+# Ordenar por el número de mensajes en orden descendente
+df_mActivos = df_mActivos.sort_values(by='# Mensajes', ascending=False)
+
+# Restablecer el índice
+df_mActivos.reset_index(drop=True, inplace=True)
+
+# Mostrar el DataFrame corregido
 with col2:
     st.write(df_mActivos)
 ###################################
-###################################
-
-# #### Estadísticas por miembro
 
 # Separar mensajes (sin multimedia) y multimedia (stickers, fotos, videos)
 multimedia_df = df[df['Mensaje'] == '<Media omitted>']
 mensajes_df = df.drop(multimedia_df.index)
-
 # Contar la cantidad de palabras y letras por mensaje
 mensajes_df['Letras'] = mensajes_df['Mensaje'].apply(lambda s : len(s))
 mensajes_df['Palabras'] = mensajes_df['Mensaje'].apply(lambda s : len(s.split(' ')))
 # mensajes_df.tail()
-
 
 # Obtener a todos los miembros
 miembros = mensajes_df.Miembro.unique()
@@ -271,9 +259,6 @@ for i in range(len(miembros)):
 
 # Convertir el diccionario a una cadena JSON
 json_str = json.dumps(dic, ensure_ascii=False)
-    
-# print(json_str)
-
 
 # Convertir de diccionario a dataframe
 miembro_stats_df = pd.DataFrame.from_dict(dic)
@@ -298,7 +283,7 @@ miembro_stats_df = miembro_stats_df.sort_values(by=['Mensajes'], ascending=False
 st.subheader('Cómo se distribuyen nuestros mensajes 👀')
 st.write(miembro_stats_df)
 ###################################
-st.header('🤗 Emojis más usados')
+st.header('🤗 Emojis más usados con mi novia')
 col1, col2 = st.beta_columns([1, 2])
 
 with col1:
@@ -325,8 +310,6 @@ df['DiaSemana'] = df['Fecha'].dt.strftime('%A')
 mapeo_dias_espanol = {'Monday': 'Lunes','Tuesday': 'Martes','Wednesday': 'Miércoles','Thursday': 'Jueves',
                       'Friday': 'Viernes','Saturday': 'Sábado','Sunday': 'Domingo'}
 df['DiaSemana'] = df['DiaSemana'].map(mapeo_dias_espanol)
-# df
-
 
 # #### Número de mensajes por rango de hora
 
@@ -340,12 +323,6 @@ date_df = df.groupby('rangoHora').count().reset_index()
 fig = px.line(date_df, x='rangoHora', y='# Mensajes por hora', color_discrete_sequence=['salmon'], template='plotly_dark')
 
 # Ajustar el gráfico
-# fig.update_layout(
-#     title={'text': 'Mensajes con ella ❤️ por hora',
-#              'y':0.96,
-#              'x':0.5,
-#              'xanchor': 'center'},
-#     font=dict(size=17))
 fig.update_traces(mode='markers+lines', marker=dict(size=10))
 fig.update_xaxes(title_text='Rango de hora', tickangle=30)
 fig.update_yaxes(title_text='# Mensajes')
@@ -368,11 +345,6 @@ date_df = df.groupby('DiaSemana').count().reset_index()
 # Plotear la cantidad de mensajes respecto del tiempo
 fig = px.line(date_df, x='DiaSemana', y='# Mensajes por día', color_discrete_sequence=['salmon'], template='plotly_dark')
 
-# Ajustar el gráfico
-# fig.update_layout(
-#     title={'text': 'Mensajes con ella ❤️ por día', 'y':0.96, 'x':0.5, 'xanchor': 'center'},
-#     font=dict(size=17))
-
 fig.update_traces(mode='markers+lines', marker=dict(size=10))
 fig.update_xaxes(title_text='Día', tickangle=30)
 fig.update_yaxes(title_text='# Mensajes')
@@ -391,18 +363,11 @@ st.plotly_chart(fig)
 df['# Mensajes por día'] = 1
 
 # Sumar (contar) los mensajes que tengan la misma fecha
-date_df = df.groupby('Fecha').sum().reset_index()
+#date_df = df.groupby('Fecha').sum().reset_index()
+date_df = df.groupby('Fecha').sum(numeric_only=True).reset_index()
 
 # Plotear la cantidad de mensajes respecto del tiempo
 fig = px.line(date_df, x='Fecha', y='# Mensajes por día', color_discrete_sequence=['salmon'], template='plotly_dark')
-
-# Ajustar el gráfico
-# fig.update_layout(
-#     title={'text': 'Mensajes con ella ❤️',
-#              'y':0.96,
-#              'x':0.5,
-#              'xanchor': 'center'},
-#     font=dict(size=17))
 
 fig.update_xaxes(title_text='Fecha', tickangle=45, nticks=35)
 fig.update_yaxes(title_text='# Mensajes')
@@ -437,9 +402,7 @@ wordcloud = WordCloud(width = 800, height = 800, background_color ='black', stop
                       mask = mask, colormap='OrRd',).generate(total_palabras)
 
 # Plotear la nube de palabras más usadas
-# wordcloud.to_image()
-
 ###################################
 st.header('☁️ Nuestro word cloud')
-st.image(wordcloud.to_array(), caption='Las palabras que más usamos ❤️', use_column_width=True)
+st.image(wordcloud.to_array(), caption='Palabras que más usamos con mi Fresita ❤️', use_column_width=True)
 ###################################
