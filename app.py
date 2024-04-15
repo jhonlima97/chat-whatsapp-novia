@@ -192,25 +192,19 @@ df_mActivos = df.groupby('Miembro').agg({
     'Links': 'sum'  # Agregar la suma de enlaces por miembro
 })
 df_mActivos.reset_index(inplace=True)
-
 # Sumar los diferentes tipos de mensajes para obtener el número total de mensajes por miembro
 df_mActivos['# mensajes'] = df_mActivos['Mensaje'] + df_mActivos['Emojis'] + df_mActivos['Links']
-
 # Calcular el porcentaje de mensajes para cada miembro
 df_mActivos['% Mensajes'] = (df_mActivos['# mensajes'] / df_mActivos['# mensajes'].sum()) * 100
-
 # Seleccionar solo las columnas necesarias
 df_mActivos = df_mActivos[['Miembro', '# mensajes', '% Mensajes']]
-
 # Renombrar las columnas
 df_mActivos = df_mActivos.rename(columns={'Miembro': 'Miembro', '# mensajes': '# Mensajes', '% Mensajes': '% Mensajes'})
-
 # Ordenar por el número de mensajes en orden descendente
 df_mActivos = df_mActivos.sort_values(by='# Mensajes', ascending=False)
 
 # Restablecer el índice
 df_mActivos.reset_index(drop=True, inplace=True)
-
 # Mostrar el DataFrame corregido
 with col2:
     st.write(df_mActivos)
@@ -222,11 +216,9 @@ mensajes_df = df.drop(multimedia_df.index)
 # Contar la cantidad de palabras y letras por mensaje
 mensajes_df['Letras'] = mensajes_df['Mensaje'].apply(lambda s : len(s))
 mensajes_df['Palabras'] = mensajes_df['Mensaje'].apply(lambda s : len(s.split(' ')))
-# mensajes_df.tail()
 
 # Obtener a todos los miembros
 miembros = mensajes_df.Miembro.unique()
-
 # Crear diccionario donde se almacenará todos los datos
 dic = {}
 
@@ -259,7 +251,6 @@ for i in range(len(miembros)):
 
 # Convertir el diccionario a una cadena JSON
 json_str = json.dumps(dic, ensure_ascii=False)
-
 # Convertir de diccionario a dataframe
 miembro_stats_df = pd.DataFrame.from_dict(dic)
 
@@ -267,14 +258,13 @@ miembro_stats_df = pd.DataFrame.from_dict(dic)
 estadísticas = ['Mensajes', 'Palabras por mensaje', 'Multimedia', 'Emojis', 'Links']
 miembro_stats_df['Estadísticas'] = estadísticas
 miembro_stats_df.set_index('Estadísticas', inplace=True)
-
 # Transponer el dataframe
 miembro_stats_df = miembro_stats_df.T
 
 #Convertir a integer las columnas Mensajes, Multimedia Emojis y Links
 miembro_stats_df['Mensajes'] = miembro_stats_df['Mensajes'].apply(int)
+# Renombramos la columna Mensajes por Texto
 miembro_stats_df = miembro_stats_df.rename(columns={'Mensajes': 'Texto'})
-
 miembro_stats_df['Multimedia'] = miembro_stats_df['Multimedia'].apply(int)
 miembro_stats_df['Emojis'] = miembro_stats_df['Emojis'].apply(int)
 miembro_stats_df['Links'] = miembro_stats_df['Links'].apply(int)
