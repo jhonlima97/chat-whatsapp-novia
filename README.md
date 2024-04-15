@@ -13,10 +13,10 @@ Esta app es un analisis del chat de whatsapp cn mi novia.
 
 ## Technologies usadas  
  
-✅ streamlit version 0.79.0  
+✅ streamlit version 1.33.0  
 ✅ regex version 2023.12.25  
 ✅ demoji version 1.1.0  
-✅ plotly version 4.14.3  
+✅ plotly version 5.20.0  
 ✅ wordcloud  version 1.9.3  
 
 ## Recomendaciones para ejecutar el App  
