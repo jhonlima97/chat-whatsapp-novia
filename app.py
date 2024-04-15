@@ -273,12 +273,13 @@ miembro_stats_df = miembro_stats_df.T
 
 #Convertir a integer las columnas Mensajes, Multimedia Emojis y Links
 miembro_stats_df['Mensajes'] = miembro_stats_df['Mensajes'].apply(int)
+miembro_stats_df = miembro_stats_df.rename(columns={'Mensajes': 'Texto'})
+
 miembro_stats_df['Multimedia'] = miembro_stats_df['Multimedia'].apply(int)
 miembro_stats_df['Emojis'] = miembro_stats_df['Emojis'].apply(int)
 miembro_stats_df['Links'] = miembro_stats_df['Links'].apply(int)
-miembro_stats_df = miembro_stats_df.sort_values(by=['Mensajes'], ascending=False)
+miembro_stats_df = miembro_stats_df.sort_values(by=['Texto'], ascending=False)
 
-###################################
 ###################################
 st.subheader('Cómo se distribuyen nuestros mensajes 👀')
 st.write(miembro_stats_df)
