@@ -1,5 +1,5 @@
 ## APP
-Esta app es un analisis del chat de whatsapp cn mi novia.  
+Esta app es un analisis del chat de whatsapp con mi novia.  
 
 ## App Features  
 
@@ -20,4 +20,4 @@ Esta app es un analisis del chat de whatsapp cn mi novia.
 ✅ wordcloud  version 1.9.3  
 
 ## Recomendaciones para ejecutar el App  
-Ejecuta el comando streamlit run app.py, en la terminal para visualizar la web en local    
+Ejecuta el comando "streamlit run app.py", en la terminal para visualizar la web en local    
