@@ -21,3 +21,5 @@ Esta app es un analisis del chat de whatsapp con mi novia.
 
 ## Recomendaciones para ejecutar el App  
 Ejecuta el comando "streamlit run app.py", en la terminal para visualizar la web en local    
+
+- Echale un vista a mi app en  👉 https://jhonygaby.streamlit.app/  
